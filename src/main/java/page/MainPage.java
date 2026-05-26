@@ -1,4 +1,4 @@
-package Page;
+package page;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -9,12 +9,14 @@ import java.time.Duration;
 import java.util.ArrayList;
 
 public class MainPage {
+    private static final String BASE_URL = "https://qa-scooter.praktikum-services.ru/";
     private WebDriver driver;
     private WebDriverWait wait;
 
 
     private final By cookieButton = By.id("rcc-confirm-button");
-    private final By orderButton = By.xpath("//button[@class='Button_Button__ra12g']");
+    private final By topOrderButton = By.xpath("//button[@class='Button_Button__ra12g']");
+    private final By bottomOrderButton = By.xpath("//button[@class='Button_Button__ra12g Button_Middle__1CSJM']");
     private final By yandexLogo = By.xpath("//a[contains(@href, 'yandex')]//img");
     private final By[] questionLocators = {
             By.id("accordion__heading-0"),
@@ -46,19 +48,18 @@ public class MainPage {
 
 
     public MainPage open() {
-        driver.get("https://qa-scooter.praktikum-services.ru/");
+        driver.get(BASE_URL);
         return this;
     }
 
     public MainPage acceptCookies() {
         try {
-            WebElement button = driver.findElement(cookieButton);
+            WebElement button = wait.until(ExpectedConditions.elementToBeClickable(cookieButton));
             if (button.isDisplayed()) {
                 button.click();
-                Thread.sleep(500); // небольшая пауза после клика по куки
+
             }
         } catch (Exception e) {
-            System.out.println("Куки баннер не найден");
         }
         return this;
     }
@@ -66,47 +67,18 @@ public class MainPage {
     public MainPage scrollToBottom() {
         JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript("window.scrollTo(0, document.body.scrollHeight);");
-        try {
-            Thread.sleep(1000); // ждём подгрузки всех элементов
-        } catch (InterruptedException e) {
-            System.out.println("Ошибка при паузе: " + e.getMessage());
-        }
+        wait.until(ExpectedConditions.visibilityOfElementLocated(questionLocators[questionLocators.length - 1]));
         return this;
     }
 
-    public String getQuestionText(int index) {
-        return driver.findElement(questionLocators[index]).getText();
-    }
-
-    public MainPage clickQuestion(int index) {
-        WebElement question = driver.findElement(questionLocators[index]);
-
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", question);
-        question.click();
-        return this;
-    }
-
-    public String getAnswerText(int index) {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(answerLocators[index]));
-        return driver.findElement(answerLocators[index]).getText();
-    }
-
-    public boolean isAnswerDisplayed(int index) {
-        try {
-            // Ждём появления ответа
-            wait.until(ExpectedConditions.visibilityOfElementLocated(answerLocators[index]));
-            return driver.findElement(answerLocators[index]).isDisplayed();
-        } catch (Exception e) {
-            return false;
+    public void clickOrderButton(String buttonLocation) {
+        if (buttonLocation.equals("top")) {
+            wait.until(ExpectedConditions.elementToBeClickable(topOrderButton)).click();
+        } else {
+            WebElement button = wait.until(ExpectedConditions.elementToBeClickable(bottomOrderButton));
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", button);
+            button.click();
         }
-    }
-
-    public int getQuestionsCount() {
-        return questionLocators.length;
-    }
-
-    public void clickOrderButton() {
-        driver.findElement(orderButton).click();
     }
 
     public MainPage clickYandexLogo() {
@@ -130,8 +102,42 @@ public class MainPage {
 
     public void closeCurrentWindowAndSwitchToMain() {
         ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
-        String mainTab = tabs.get(0);  // первое окно - главное
-        driver.close();  // закрываем текущее окно
-        driver.switchTo().window(mainTab);  // возвращаемся на главное
+        String mainTab = tabs.get(0);
+        driver.close();
+        driver.switchTo().window(mainTab);
+    }
+
+    public void clickQuestionByText(String questionText) {
+        By questionLocator = By.xpath("//div[@id='accordion__heading-" + getQuestionIndexByText(questionText) + "']");
+        wait.until(ExpectedConditions.elementToBeClickable(questionLocator)).click();
+    }
+
+
+    private int getQuestionIndexByText(String questionText) {
+        for (int i = 0; i < questionLocators.length; i++) {
+            String currentQuestionText = driver.findElement(questionLocators[i]).getText();
+            if (currentQuestionText.equals(questionText)) {
+                return i;
+            }
+        }
+        throw new IllegalArgumentException("Вопрос не найден: " + questionText);
+    }
+
+
+    public String getAnswerByQuestionText(String questionText) {
+        int index = getQuestionIndexByText(questionText);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(answerLocators[index]));
+        return driver.findElement(answerLocators[index]).getText();
+    }
+
+
+    public boolean isAnswerDisplayedByQuestionText(String questionText) {
+        try {
+            int index = getQuestionIndexByText(questionText);
+            wait.until(ExpectedConditions.visibilityOfElementLocated(answerLocators[index]));
+            return driver.findElement(answerLocators[index]).isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

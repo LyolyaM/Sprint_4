@@ -1,4 +1,4 @@
-package Page;
+package page;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -24,7 +24,7 @@ public class OrderPage {
     private final By rentalPeriodField = By.xpath("//div[@class='Dropdown-placeholder']");
     private final By commentField = By.xpath("//input[@placeholder='Комментарий для курьера']");
     private final By orderButton = By.xpath("//button[@class='Button_Button__ra12g Button_Middle__1CSJM']");
-    private final By confirmButton = By.xpath("//button[contains(text(),'Да')]");
+    private final By confirmButton = By.xpath("(//button[contains(text(),'Да')])[1]");
 
 
     private final By successMessage = By.xpath("//div[@class='Order_ModalHeader__3FDaJ']");
@@ -52,7 +52,7 @@ public class OrderPage {
     }
 
     public OrderPage selectMetro(String metroStation) {
-        WebElement metroInput = driver.findElement(metroField);
+        WebElement metroInput = wait.until(ExpectedConditions.elementToBeClickable(metroField));
         metroInput.click();
         metroInput.sendKeys(metroStation);
 
@@ -63,11 +63,18 @@ public class OrderPage {
         }
 
         metroInput.sendKeys(Keys.ENTER);
+        metroInput.sendKeys(Keys.ESCAPE);
+
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
         return this;
     }
 
     public OrderPage enterPhone(String phone) {
-        driver.findElement(phoneField).sendKeys(phone);
+        wait.until(ExpectedConditions.elementToBeClickable(phoneField)).sendKeys(phone);
         return this;
     }
 
@@ -78,7 +85,9 @@ public class OrderPage {
 
 
     public OrderPage selectDate(String date) {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(dateField)).sendKeys(date);
+        WebElement dateInput = wait.until(ExpectedConditions.visibilityOfElementLocated(dateField));
+        dateInput.sendKeys(date);
+        dateInput.sendKeys(Keys.ESCAPE);
         return this;
     }
 
@@ -120,4 +129,3 @@ public class OrderPage {
         }
     }
 }
-
