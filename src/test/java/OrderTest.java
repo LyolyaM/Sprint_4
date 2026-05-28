@@ -78,8 +78,6 @@ public class OrderTest extends BestUiTest {
         assertTrue("Заказ не был создан для " + name + " " + surname,
                 orderPage.isOrderSuccess());
 
-        System.out.println("✓ Заказ успешно создан для: " + name + " " + surname +
-                " (кнопка: " + buttonLocation + ")");
-    }
+            }
 }
 
