@@ -65,8 +65,7 @@ public class QuestionTest extends BestUiTest {
         assertEquals("Текст ответа на вопрос не совпадает",
                 expectedAnswer, actualAnswer);
 
-        System.out.println("✓ Вопрос \"" + questionText + "\" пройден");
-        System.out.println("  Ответ: " + actualAnswer);
+
     }
 }
 

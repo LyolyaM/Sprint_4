@@ -2,14 +2,10 @@ package page;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import java.time.Duration;
 import org.openqa.selenium.Keys;
 
 public class OrderPage {
     private WebDriver driver;
-    private WebDriverWait wait;
 
 
     private final By nameField = By.xpath("//input[@placeholder='* Имя']");
@@ -32,12 +28,11 @@ public class OrderPage {
 
     public OrderPage(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(15));
     }
 
 
     public OrderPage enterName(String name) {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(nameField)).sendKeys(name);
+        driver.findElement(nameField).sendKeys(name);
         return this;
     }
 
@@ -52,29 +47,16 @@ public class OrderPage {
     }
 
     public OrderPage selectMetro(String metroStation) {
-        WebElement metroInput = wait.until(ExpectedConditions.elementToBeClickable(metroField));
+        WebElement metroInput = driver.findElement(metroField);
         metroInput.click();
         metroInput.sendKeys(metroStation);
-
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-
         metroInput.sendKeys(Keys.ENTER);
-        metroInput.sendKeys(Keys.ESCAPE);
 
-        try {
-            Thread.sleep(300);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
         return this;
     }
 
     public OrderPage enterPhone(String phone) {
-        wait.until(ExpectedConditions.elementToBeClickable(phoneField)).sendKeys(phone);
+        driver.findElement(phoneField).sendKeys(phone);
         return this;
     }
 
@@ -85,7 +67,7 @@ public class OrderPage {
 
 
     public OrderPage selectDate(String date) {
-        WebElement dateInput = wait.until(ExpectedConditions.visibilityOfElementLocated(dateField));
+        WebElement dateInput = driver.findElement(dateField);
         dateInput.sendKeys(date);
         dateInput.sendKeys(Keys.ESCAPE);
         return this;
@@ -94,7 +76,7 @@ public class OrderPage {
     public OrderPage selectRentalPeriod(String period) {
         driver.findElement(rentalPeriodField).click();
         By periodOption = By.xpath("//div[contains(@class, 'Dropdown-option') and text()='" + period + "']");
-        wait.until(ExpectedConditions.elementToBeClickable(periodOption)).click();
+        driver.findElement(periodOption).click();
         return this;
     }
 
@@ -115,14 +97,14 @@ public class OrderPage {
     }
 
     public OrderPage confirmOrder() {
-        wait.until(ExpectedConditions.elementToBeClickable(confirmButton)).click();
+        driver.findElement(confirmButton).click();
         return this;
     }
 
 
     public boolean isOrderSuccess() {
         try {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(successMessage));
+
             return driver.findElement(successMessage).isDisplayed();
         } catch (Exception e) {
             return false;

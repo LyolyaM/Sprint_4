@@ -16,11 +16,8 @@ public class YandexLogoTest extends BestUiTest{
 
         assertTrue("Страница Яндекса не открылась", isYandexPageOpened);
 
-        System.out.println("✓ Логотип Яндекса работает, открыта страница: " + driver.getCurrentUrl());
-
         mainPage.closeCurrentWindowAndSwitchToMain();
 
-        System.out.println("✓ Тест логотипа Яндекса пройден!");
     }
 }
 

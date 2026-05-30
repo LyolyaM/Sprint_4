@@ -3,15 +3,12 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import java.time.Duration;
 import java.util.ArrayList;
 
 public class MainPage {
     private static final String BASE_URL = "https://qa-scooter.praktikum-services.ru/";
     private WebDriver driver;
-    private WebDriverWait wait;
+
 
 
     private final By cookieButton = By.id("rcc-confirm-button");
@@ -43,7 +40,7 @@ public class MainPage {
 
     public MainPage(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
     }
 
 
@@ -54,7 +51,7 @@ public class MainPage {
 
     public MainPage acceptCookies() {
         try {
-            WebElement button = wait.until(ExpectedConditions.elementToBeClickable(cookieButton));
+            WebElement button = driver.findElement(cookieButton);
             if (button.isDisplayed()) {
                 button.click();
 
@@ -67,22 +64,21 @@ public class MainPage {
     public MainPage scrollToBottom() {
         JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript("window.scrollTo(0, document.body.scrollHeight);");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(questionLocators[questionLocators.length - 1]));
         return this;
     }
 
     public void clickOrderButton(String buttonLocation) {
         if (buttonLocation.equals("top")) {
-            wait.until(ExpectedConditions.elementToBeClickable(topOrderButton)).click();
+            driver.findElement(topOrderButton).click();
         } else {
-            WebElement button = wait.until(ExpectedConditions.elementToBeClickable(bottomOrderButton));
+            WebElement button = driver.findElement(bottomOrderButton);
             ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", button);
             button.click();
         }
     }
 
     public MainPage clickYandexLogo() {
-        wait.until(ExpectedConditions.elementToBeClickable(yandexLogo)).click();
+        driver.findElement(yandexLogo).click();
         return this;
     }
 
@@ -108,8 +104,10 @@ public class MainPage {
     }
 
     public void clickQuestionByText(String questionText) {
-        By questionLocator = By.xpath("//div[@id='accordion__heading-" + getQuestionIndexByText(questionText) + "']");
-        wait.until(ExpectedConditions.elementToBeClickable(questionLocator)).click();
+        int index = getQuestionIndexByText(questionText);
+        WebElement question = driver.findElement(questionLocators[index]);
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", question);
+        question.click();
     }
 
 
@@ -126,7 +124,6 @@ public class MainPage {
 
     public String getAnswerByQuestionText(String questionText) {
         int index = getQuestionIndexByText(questionText);
-        wait.until(ExpectedConditions.visibilityOfElementLocated(answerLocators[index]));
         return driver.findElement(answerLocators[index]).getText();
     }
 
@@ -134,7 +131,6 @@ public class MainPage {
     public boolean isAnswerDisplayedByQuestionText(String questionText) {
         try {
             int index = getQuestionIndexByText(questionText);
-            wait.until(ExpectedConditions.visibilityOfElementLocated(answerLocators[index]));
             return driver.findElement(answerLocators[index]).isDisplayed();
         } catch (Exception e) {
             return false;
