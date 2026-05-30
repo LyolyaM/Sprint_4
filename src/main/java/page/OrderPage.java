@@ -20,7 +20,7 @@ public class OrderPage {
     private final By rentalPeriodField = By.xpath("//div[@class='Dropdown-placeholder']");
     private final By commentField = By.xpath("//input[@placeholder='Комментарий для курьера']");
     private final By orderButton = By.xpath("//button[@class='Button_Button__ra12g Button_Middle__1CSJM']");
-    private final By confirmButton = By.xpath("//div[@class='Order_Modal__YZ-d3']//button[text()='Да']");
+    private final By confirmButton = By.xpath("//div[contains(@class, 'Order_Modal')]//button[contains(@class, 'Button_Button__ra12g') and text()='Да']");
 
 
     private final By successMessage = By.xpath("//div[@class='Order_Modal__YZ-d3']//div[@class='Order_ModalHeader__3FDaJ' and text()='Заказ оформлен']");
