@@ -23,7 +23,7 @@ public class OrderPage {
     private final By confirmButton = By.xpath("//div[contains(@class, 'Order_Modal')]//button[contains(@class, 'Button_Button__ra12g') and text()='Да']");
 
 
-    private final By successMessage = By.xpath("//div[@class='Order_Modal__YZ-d3']//div[@class='Order_ModalHeader__3FDaJ' and text()='Заказ оформлен']");
+    private final By successMessage = By.xpath("//div[contains(@class, 'Order_Modal')]//div[contains(text(), 'Заказ оформлен')]");
 
 
     public OrderPage(WebDriver driver) {
